@@ -13,10 +13,9 @@ if (!isset($publication->schema))
 $url = 'https://directdemocracy.vote/json-schema/';
 if (substr($publication->schema, 0, 41) !== $url)
   error("Wrong schema URL: " . substr($publication->schema, 0, 41));
-$n = strpos($publication->schema, '/', 41);
-if (substr($publication->schema, $n) != '/ballot.schema.json')
-  error("Wrong schema object");
-$directdemocracy_version = substr($publication->schema, 41, $n);
+if (substr($publication->schema, -19) != '/ballot.schema.json')
+  error("Wrong schema object" . substr($publication->schema, -19));
+$directdemocracy_version = substr($publication->schema, 41, -19);
 if ($directdemocracy_version !== '0.0.1')
   error("Unsupported version: $directdemocracy_version");
 
