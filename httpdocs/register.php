@@ -44,14 +44,14 @@ $publication->citizen->key = '';
 $publication->citizen->signature = '';
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $verify = openssl_verify($data, base64_decode($signature_copy), public_key($publication->key), OPENSSL_ALGO_SHA256);
-if ($verify !== 1)
+if ($verify != 1)
   error("Wrong ballot signature");
 
 $publication->signature = $signature_copy;
 $publication->citizen->key = $citizen_key_copy;
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $verify = openssl_verify($data, base64_decode($citizen_signature_copy), public_key($citizen_key_copy), OPENSSL_ALGO_SHA256);
-if ($verify !== 1)
+if ($verify != 1)
   error("Wrong citizen signature");
 
 die("{\"status\":\"success\"}");
