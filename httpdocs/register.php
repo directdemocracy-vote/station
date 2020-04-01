@@ -1,5 +1,6 @@
 <?php
 function error($message) {
+  # TODO: should publish `RSba` message.
   die("{\"error\":\"$message\"}");
 }
 function public_key($key) {
@@ -54,6 +55,27 @@ $verify = openssl_verify($data, base64_decode($citizen_signature_copy), public_k
 if ($verify != 1)
   error("Wrong citizen signature");
 
-die("{\"status\":\"success\"}");
+# get trustee url from publisher
+$publisher = 'https://publisher.directdemocracy.vote';
+$trustee = file_get_contents("$publisher/trustee_url.php?referendum=" . urlencode($publication->referendum));
+
+# check if citizen is allowed by trustee to vote to this referendum
+$allowed = file_get_contents("$trustee/check_vote.php?referendum=" . urlencode($publication->referendum) .
+                             "&citizen=" . urlencode($publication->citizen->key));
+
+$publication->citizen->key = '';
+$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$signature = '';
+$private_key_file = fopen("../id_rsa", "r") or die("unable to open private key file");
+$k = fread($public_key_file, filesize("../id_rsa"));
+fclose($public_key_file);
+$private_key = openssl_get_privatekey($k);
+$success = openssl_sign($data, &$signature, $private_key, OPENSSL_ALGO_SHA256);
+if ($success === FALSE)
+  die("Failed to sign ballot");
+$publication->station->signature = $signature;
+
+$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+die("{\"ballot\":$data}");
 
 ?>
