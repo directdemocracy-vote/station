@@ -2,8 +2,8 @@
 
 function stripped_key($public_key) {
   $stripped = "";
-  $header = strlen("-----BEGIN PUBLIC KEY-----\n");
-  $footer = strlen("-----END PUBLIC KEY-----");
+  $header = strlen("-----BEGIN RSA PUBLIC KEY-----\n");
+  $footer = strlen("-----END RSA PUBLIC KEY-----");
   $l = strlen($public_key) - $footer;
   for($i = $header; $i < $l; $i += 65)
     $stripped .= substr($public_key, $i, 64);
