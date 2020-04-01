@@ -73,9 +73,9 @@ $signature = '';
 $private_key_file = fopen("../id_rsa", "r") or die("unable to open private key file");
 $k = fread($private_key_file, filesize("../id_rsa"));
 fclose($private_key_file);
-$private_key = openssl_get_privatekey($k);
-$success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
-openssl_free_key($private_key);
+//$private_key = openssl_get_privatekey($k);
+$success = openssl_sign($data, $signature, $k, OPENSSL_ALGO_SHA256);
+//openssl_free_key($private_key);
 if ($success === FALSE)
   die("Failed to sign ballot $k");
 $publication->station->signature = $signature;
