@@ -1,13 +1,10 @@
 <?php
 
 function stripped_key($public_key) {
-  $stripped = "";
-  $header = strlen("-----BEGIN PUBLIC KEY-----\n");
-  $footer = strlen("-----END PUBLIC KEY-----");
-  $l = strlen($public_key) - $footer;
-  for($i = $header; $i < $l; $i += 65)
-    $stripped .= substr($public_key, $i, 64);
-  $stripped = substr($stripped, 0, -2 - $footer);
+  $stripped = str_replace("-----BEGIN PUBLIC KEY-----", "", $public_key);
+  $stripped = str_replace("-----END PUBLIC KEY-----", "", $stripped);
+  $stripped = str_replace("\r\n", '', $stripped);
+  $stripped = str_replace("\n", '', $stripped);
   return $stripped;
 }
 
