@@ -81,6 +81,6 @@ if ($success === FALSE)
 $publication->station->signature = $signature;
 
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-die("{\"ballot\":$data}");
+die("{\"ballot\":\"$signature\"}");
 
 ?>
