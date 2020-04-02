@@ -18,6 +18,10 @@ function stripped_key($public_key) {
   return $stripped;
 }
 
+header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: content-type");
+
 $publication = json_decode(file_get_contents("php://input"));
 if (!$publication)
   error("Unable to parse JSON post");
