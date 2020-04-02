@@ -104,7 +104,7 @@ $mysqli->set_charset('utf8mb4');
 $query = "INSERT INTO ballot(`schema`, `key`, signature, published, expires, referendum, citizen, citizen_signature) " .
          "VALUES('$publication->schema', '$publication->key', '$publication->signature', " .
          "$publication->published, $publication->expires, '$publication->referendum', '$citizen_key', '$citizen_signature')";
-$msqli->query($query) or error($mysqli->error);
+$mysqli->query($query) or error($mysqli->error);
 
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 die("{\"ballot\":$data}");
