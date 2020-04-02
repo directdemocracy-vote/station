@@ -95,5 +95,5 @@ if ($mysqli->affected_rows !== 1)
   die("Error: affected_rows = $mysqli->affected_rows");
 $mysqli->close();
 
-die("$data\n\n$response");
+die("$publication->schema\n\n$response");
 ?>
