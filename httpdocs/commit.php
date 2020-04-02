@@ -86,7 +86,7 @@ $mysqli->set_charset('utf8mb4');
 $query = "UPDATE ballot SET key='', signature='' " .
          "WHERE citizen = '$publication->key' AND referendum = '$publication->referendum' " .
          "AND `schema` = '$publication->schema'";
-$msqli->query($query) or error($mysqli->error);
+$mysqli->query($query) or error($mysqli->error);
 if ($mysqli->affected_rows !== 1)
   die("Error: affected_rows = $mysqli->affected_rows");
 $mysqli->close();
