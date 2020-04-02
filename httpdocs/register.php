@@ -70,10 +70,10 @@ if ($allowed !== 'yes')
   die("Citizen is not allowed to vote to this referendum by trustee: $allowed");
 $publication->citizen->key = '';
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$signature = '';
 $private_key = openssl_get_privatekey("file://../id_rsa");
 if ($private_key == FALSE)
   error("Failed to get private key.");
+$signature = '';
 $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
 openssl_free_key($private_key);
 if ($success === FALSE)
@@ -81,6 +81,5 @@ if ($success === FALSE)
 $publication->station->signature = base64_encode($signature);
 
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-die("{\"ballot\":$data, \"signature\":\"" . base64_encode($signature) . "\"}");
-
+die("{\"ballot\":$data}");
 ?>
