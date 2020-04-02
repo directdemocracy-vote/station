@@ -59,26 +59,25 @@ if ($verify != 1)
 $publisher = 'https://publisher.directdemocracy.vote';
 $trustee = file_get_contents("$publisher/trustee_url.php?referendum=" . urlencode($publication->referendum));
 
-die($trustee);
+if (substr($trustee, 0, 8) !== 'https://')
+  die("Cannot get referendum trustee: $trustee");
 
 # check if citizen is allowed by trustee to vote to this referendum
 
-/* FIXME: implement this
-$allowed = file_get_contents("$trustee/check_vote.php?referendum=" . urlencode($publication->referendum) .
+$allowed = file_get_contents("$trustee/can_vote.php?referendum=" . urlencode($publication->referendum) .
                              "&citizen=" . urlencode($publication->citizen->key));
-*/
-
-
+if ($allowed !== 'yes')
+  die("Citizen is not allowed to vote to this referendum by trustee: $allowed");
 $publication->citizen->key = '';
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $signature = '';
 $private_key = openssl_get_privatekey("file://../id_rsa");
 if ($private_key == FALSE)
-  die("Failed to get private key.");
+  error("Failed to get private key.");
 $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
 openssl_free_key($private_key);
 if ($success === FALSE)
-  die("Failed to sign ballot.");
+  error("Failed to sign ballot.");
 $publication->station->signature = $signature;
 
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
