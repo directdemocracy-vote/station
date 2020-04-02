@@ -1,11 +1,6 @@
 <?php
 require_once '../php/database.php';
 
-function error($message) {
-  # TODO: should publish `RSba` message.
-  die("{\"error\":\"$message\"}");
-}
-
 function public_key($key) {
   $public_key = "-----BEGIN PUBLIC KEY-----\n";
   $l = strlen($key);
@@ -23,9 +18,6 @@ function stripped_key($public_key) {
   return $stripped;
 }
 
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: content-type");
 $publication = json_decode(file_get_contents("php://input"));
 if (!$publication)
   error("Unable to parse JSON post");
@@ -45,46 +37,24 @@ if ($directdemocracy_version !== '0.0.1')
 
 $now = floatval(microtime(true) * 1000);  # milliseconds
 if ($publication->published > $now + 60000)  # allowing a 1 minute error
-    error("Publication date in the future: $publication->published > $now");
+  error("Publication date in the future: $publication->published > $now");
 if ($publication->expires < $now - 60000)  # allowing a 1 minute error
-    error("Expiration date in the past: $publication->expires < $now");
-
-$signature = $publication->signature;
-$citizen_key = $publication->citizen->key;
-$citizen_signature = $publication->citizen->signature;
-$publication->signature = '';
-$publication->citizen->key = '';
-$publication->citizen->signature = '';
-$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$verify = openssl_verify($data, base64_decode($signature), public_key($publication->key), OPENSSL_ALGO_SHA256);
-if ($verify != 1)
-  error("Wrong ballot signature");
-
-$publication->signature = $signature;
-$publication->citizen->key = $citizen_key;
-$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
-if ($verify != 1)
-  error("Wrong citizen signature");
+  error("Expiration date in the past: $publication->expires < $now");
 
 $station_key = file_get_contents('../id_rsa.pub');
 if ($publication->station->key !== stripped_key($station_key))
   error("Wrong station key");
 
-# get trustee url from publisher
-$publisher = 'https://publisher.directdemocracy.vote';
-$trustee = file_get_contents("$publisher/trustee_url.php?referendum=" . urlencode($publication->referendum));
+$signature = $publication->signature;
+$publication->signature = '';
+$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$verify = openssl_verify($data, base64_decode($signature), public_key($publication->key), OPENSSL_ALGO_SHA256);
+if ($verify != 1)
+  error("Wrong citizen signature");
+$publication->signature = $signature;
 
-if (substr($trustee, 0, 8) !== 'https://')
-  die("Cannot get referendum trustee: $trustee");
-
-# check if citizen is allowed by trustee to vote to this referendum
-
-$allowed = file_get_contents("$trustee/can_vote.php?referendum=" . urlencode($publication->referendum) .
-                             "&citizen=" . urlencode($publication->citizen->key));
-if ($allowed !== 'yes')
-  die("Citizen is not allowed to vote to this referendum by trustee: $allowed");
-$publication->citizen->key = '';
+# publish the fact that citizen has voted
+# sign the ballot
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $private_key = openssl_get_privatekey("file://../id_rsa");
 if ($private_key == FALSE)
@@ -95,17 +65,27 @@ openssl_free_key($private_key);
 if ($success === FALSE)
   error("Failed to sign ballot.");
 $publication->station->signature = base64_encode($signature);
+# publish the ballot
+$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$publisher = 'https://publisher.directdemocracy.vote';
+$options = array('http' => array('method' => 'POST',
+                                 'content' => json_encode($data),
+                                 'header' => "Content-Type: application/json\r\n" .
+                                             "Accept: application/json\r\n"));
+$response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
 
+# clear the link between the citizen and the ballot
 $mysqli = new mysqli($database_host, $database_username, $database_password, $database_name);
 if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
-
-$query = "INSERT INTO ballot(`schema`, `key`, signature, published, expires, referendum, citizen, citizen_signature) " .
-         "VALUES('$publication->schema', '$publication->key', '$publication->signature', " .
-         "$publication->published, $publication->expires, '$publication->referendum', '$citizen_key', '$citizen_signature')";
+$query = "UPDATE ballot SET key='', signature='' " .
+         "WHERE citizen = '$publication->key' AND referendum = '$publication->referendum' " .
+         "AND `schema` = '$publication->schema'";
 $msqli->query($query) or error($mysqli->error);
+if ($mysqli->affected_rows !== 1)
+  die("Error: affected_rows = $mysqli->affected_rows");
+$mysqli->close();
 
-$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-die("{\"ballot\":$data}");
+die($response);
 ?>
