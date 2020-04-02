@@ -30,7 +30,7 @@ $publication = json_decode(file_get_contents("php://input"));
 if (!$publication)
   error("Unable to parse JSON post");
 if (!isset($publication->schema))
-  error("Unable to read schema field " + json_encode($publication));
+  error("Unable to read schema field.");
 
 $url = 'https://directdemocracy.vote/json-schema/';
 if (substr($publication->schema, 0, 41) !== $url)
@@ -95,5 +95,5 @@ if ($mysqli->affected_rows !== 1)
   die("Error: affected_rows = $mysqli->affected_rows");
 $mysqli->close();
 
-die($response);
+die("response = $response");
 ?>
