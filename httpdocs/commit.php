@@ -77,7 +77,7 @@ $publication->station->signature = base64_encode($signature);
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $publisher = 'https://publisher.directdemocracy.vote';
 $options = array('http' => array('method' => 'POST',
-                                 'content' => json_encode($data),
+                                 'content' => $data,
                                  'header' => "Content-Type: application/json\r\n" .
                                              "Accept: application/json\r\n"));
 $response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
@@ -95,5 +95,5 @@ if ($mysqli->affected_rows !== 1)
   die("Error: affected_rows = $mysqli->affected_rows");
 $mysqli->close();
 
-die("$publication->schema\n\n$response");
+die("$response");
 ?>
