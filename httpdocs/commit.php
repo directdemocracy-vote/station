@@ -95,5 +95,5 @@ if ($mysqli->affected_rows !== 1)
   die("Error: affected_rows = $mysqli->affected_rows");
 $mysqli->close();
 
-die("FROM PUBLISHER: $response");
+die($response);
 ?>
