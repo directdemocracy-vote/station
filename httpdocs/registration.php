@@ -94,6 +94,8 @@ $result = $mysqli->query($query) or error($mysqli->error);
 if (!$result)
   error("Ballot not found in station database.");
 $ballot = $result->fetch_assoc();
+$ballot['published'] = intval($ballot['published']);
+$ballot['expires'] = intval($ballot['expires']);
 $ballot['station'] = array('key' => $publication->station->key, 'signature' => '');
 # sign the ballot
 $data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
