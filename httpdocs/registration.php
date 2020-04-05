@@ -113,7 +113,7 @@ $options = array('http' => array('method' => 'POST',
                                              "Accept: application/json\r\n"));
 $response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
 if (isset($response->error))
-  error($reponse->error);
+  error("The bug is here: $reponse->error");
 
 # clear the link between the registration and the ballot, so that we won't be able to retrieve the vote of the citizen
 $query = "UPDATE ballot SET `key`='', signature='' " .
