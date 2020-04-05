@@ -81,7 +81,7 @@ $options = array('http' => array('method' => 'POST',
                                              "Accept: application/json\r\n"));
 $response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
 if (isset($response->error))
-  error($reponse->error);
+  error("Can't be here: $reponse->error");
 
 # create the ballot
 $mysqli = new mysqli($database_host, $database_username, $database_password, $database_name);
@@ -113,8 +113,7 @@ $options = array('http' => array('method' => 'POST',
                                              "Accept: application/json\r\n"));
 $response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
 if (isset($response->error))
-  die($data);
-  # error("The bug is here: $response->error");
+  error("The bug is here: $response->error");
 # clear the link between the registration and the ballot, so that we won't be able to retrieve the vote of the citizen
 $query = "UPDATE ballot SET `key`='', signature='' " .
          "WHERE citizenKey = '$publication->key' AND referendum = '$publication->referendum'";
