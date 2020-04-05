@@ -36,7 +36,7 @@ $url = 'https://directdemocracy.vote/json-schema/';
 if (substr($publication->schema, 0, 41) !== $url)
   error("Wrong schema URL: " . substr($publication->schema, 0, 41));
 
-if (substr($publication->schema, -19) != '/ballot.schema.json')
+if (substr($publication->schema, -19) != '/registration.schema.json')
   error("Wrong schema object" . substr($publication->schema, -19));
 
 $directdemocracy_version = substr($publication->schema, 41, -19);
@@ -62,7 +62,7 @@ if ($verify != 1)
 $publication->signature = $signature;
 
 # publish the fact that citizen has voted
-# sign the ballot
+# sign the registration
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $private_key = openssl_get_privatekey("file://../id_rsa");
 if ($private_key == FALSE)
@@ -71,9 +71,9 @@ $signature = '';
 $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
 openssl_free_key($private_key);
 if ($success === FALSE)
-  error("Failed to sign ballot.");
+  error("Failed to sign registration.");
 $publication->station->signature = base64_encode($signature);
-# publish the ballot
+# publish the registration
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $publisher = 'https://publisher.directdemocracy.vote';
 $options = array('http' => array('method' => 'POST',
@@ -82,7 +82,7 @@ $options = array('http' => array('method' => 'POST',
                                              "Accept: application/json\r\n"));
 $response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
 
-# clear the link between the citizen and the ballot
+# clear the link between the registration and the ballot
 $mysqli = new mysqli($database_host, $database_username, $database_password, $database_name);
 if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
