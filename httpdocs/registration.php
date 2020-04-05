@@ -39,7 +39,7 @@ if (substr($publication->schema, 0, 41) !== $url)
 if (substr($publication->schema, -25) != '/registration.schema.json')
   error("Wrong schema: " . substr($publication->schema, -25));
 
-$directdemocracy_version = substr($publication->schema, 41, -19);
+$directdemocracy_version = substr($publication->schema, 41, -25);
 if ($directdemocracy_version !== '0.0.1')
   error("Unsupported version: $directdemocracy_version");
 
