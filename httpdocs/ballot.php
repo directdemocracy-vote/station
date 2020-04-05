@@ -2,7 +2,7 @@
 require_once '../php/database.php';
 
 function error($message) {
-  # TODO: should publish `RSba` message.
+  # FIXME: publish refused ballot.
   die("{\"error\":\"$message\"}");
 }
 

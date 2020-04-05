@@ -69,7 +69,6 @@ if ($private_key == FALSE)
   error("Failed to read private key.");
 $signature = '';
 $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
-openssl_free_key($private_key);
 if ($success === FALSE)
   error("Failed to sign registration.");
 $publication->station->signature = base64_encode($signature);
@@ -81,12 +80,40 @@ $options = array('http' => array('method' => 'POST',
                                  'header' => "Content-Type: application/json\r\n" .
                                              "Accept: application/json\r\n"));
 $response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
+if (isset($response->error))
+  error($reponse->error);
 
-# clear the link between the registration and the ballot
+# create the ballot
 $mysqli = new mysqli($database_host, $database_username, $database_password, $database_name);
 if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
+$query = "SELECT `schema`, `key`, signature, published, expires, referendum FROM ballot "
+        ."WHERE citizenKey = '$publication->key' AND referendum = '$publication->referendum'";
+$result = $mysqli->query($query) or error($mysqli->error);
+if (!$result)
+  error("Ballot not found in station database.");
+$ballot = $result->fetch_assoc();
+$ballot['station'] = array('key' => $publication->station->key, 'signature' => '');
+# sign the ballot
+$data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$signature = '';
+$success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
+openssl_free_key($private_key);
+if ($success === FALSE)
+  error("Failed to sign ballot.");
+$ballot->station->signature = base64_encode($signature);
+# publish the ballot
+$data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$options = array('http' => array('method' => 'POST',
+                                 'content' => $data,
+                                 'header' => "Content-Type: application/json\r\n" .
+                                             "Accept: application/json\r\n"));
+$response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
+if (isset($response->error))
+  error($reponse->error);
+
+# clear the link between the registration and the ballot, so that we won't be able to retrieve the vote of the citizen
 $query = "UPDATE ballot SET `key`='', signature='' " .
          "WHERE citizenKey = '$publication->key' AND referendum = '$publication->referendum'";
 $mysqli->query($query) or error($mysqli->error);
