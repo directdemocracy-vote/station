@@ -44,10 +44,12 @@ if ($directdemocracy_version !== '0.0.1')
   error("Unsupported version: $directdemocracy_version");
 
 $now = floatval(microtime(true) * 1000);  # milliseconds
-if ($publication->published > $now + 60000)  # allowing a 1 minute error
-    error("Publication date in the future: $publication->published > $now");
+
+# FIXME: published date should match referendum deadline
+# and expires date should match the referendum deadline + 1 year.
+
 if ($publication->expires < $now - 60000)  # allowing a 1 minute error
-    error("Expiration date in the past: $publication->expires < $now");
+  error("Expiration date in the past: $publication->expires < $now");
 
 $signature = $publication->signature;
 $citizen_key = $publication->citizen->key;
