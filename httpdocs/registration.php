@@ -36,8 +36,8 @@ $url = 'https://directdemocracy.vote/json-schema/';
 if (substr($publication->schema, 0, 41) !== $url)
   error("Wrong schema URL: " . substr($publication->schema, 0, 41));
 
-if (substr($publication->schema, -19) != '/registration.schema.json')
-  error("Wrong schema: " . substr($publication->schema, -19));
+if (substr($publication->schema, -25) != '/registration.schema.json')
+  error("Wrong schema: " . substr($publication->schema, -25));
 
 $directdemocracy_version = substr($publication->schema, 41, -19);
 if ($directdemocracy_version !== '0.0.1')
