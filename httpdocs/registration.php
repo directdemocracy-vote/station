@@ -88,11 +88,10 @@ if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
 $query = "UPDATE ballot SET `key`='', signature='' " .
-         "WHERE citizen = '$publication->key' AND referendum = '$publication->referendum' " .
-         "AND `schema` = '$publication->schema'";
+         "WHERE citizen = '$publication->key' AND referendum = '$publication->referendum'";
 $mysqli->query($query) or error($mysqli->error);
 if ($mysqli->affected_rows !== 1)
-  die("Error: affected_rows = $mysqli->affected_rows");
+  error("Affected_rows = $mysqli->affected_rows");
 $mysqli->close();
 
 die($response);
