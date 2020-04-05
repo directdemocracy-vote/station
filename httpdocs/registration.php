@@ -122,5 +122,5 @@ if ($mysqli->affected_rows !== 1)
   error("Affected_rows = $mysqli->affected_rows");
 $mysqli->close();
 
-die($response);
+die("{\"status\":\"$response->error\"}"));
 ?>
