@@ -80,7 +80,7 @@ $options = array('http' => array('method' => 'POST',
                                  'header' => "Content-Type: application/json\r\n" .
                                              "Accept: application/json\r\n"));
 $response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
-$json = json_decode($reponse);
+$json = json_decode($response);
 if (isset($json->error))
   error($json->error);
 
@@ -113,7 +113,7 @@ $options = array('http' => array('method' => 'POST',
                                  'header' => "Content-Type: application/json\r\n" .
                                              "Accept: application/json\r\n"));
 $response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
-$json = json_decode($reponse);
+$json = json_decode($response);
 if (isset($json->error))
   die($data);
   # error($json->error);
