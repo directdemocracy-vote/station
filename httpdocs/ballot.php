@@ -103,7 +103,7 @@ if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
 
-$query = "INSERT INTO ballot(`schema`, `key`, signature, published, expires, referendum, citizen, citizen_signature) " .
+$query = "INSERT INTO ballot(`schema`, `key`, signature, published, expires, referendum, citizenKey, citizenSignature) " .
          "VALUES('$publication->schema', '$publication->key', '$publication->signature', " .
          "$publication->published, $publication->expires, '$publication->referendum', '$citizen_key', '$citizen_signature')";
 $mysqli->query($query) or error($mysqli->error);
