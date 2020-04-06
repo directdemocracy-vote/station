@@ -66,7 +66,7 @@ if ($verify != 1)
   error("Wrong ballot signature");
 
 $publication->signature = $signature;
-$publication->citizen = (object)['key' => $citizen_key, 'signature' => ''];
+$publication->citizen = (object)['key' => $citizen_key];
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
 if ($verify != 1)
