@@ -56,9 +56,8 @@ if (isset($publication->citizen)) {
   $citizen_key = $publication->citizen->key;
   $citizen_signature = $publication->citizen->signature;
   unset($publication->citizen);
-} else {
-  error("Missing citizen field");
 }
+
 $publication->signature = '';
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $verify = openssl_verify($data, base64_decode($signature), public_key($publication->key), OPENSSL_ALGO_SHA256);
@@ -70,6 +69,7 @@ if (isset($citizen_key)) {
   $publication->citizen = (object)['key' => $citizen_key, 'signature' => ''];
   $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
   $verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
+  error($publication->citizen->key . " == $citizen_key");
   if ($verify != 1)
     error("Wrong citizen signature");
   $publication->citizen->signature = $citizen_signature;
