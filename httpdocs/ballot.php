@@ -52,22 +52,26 @@ if ($publication->expires < $now - 60000)  # allowing a 1 minute error
   error("Expiration date in the past: $publication->expires < $now");
 
 $signature = $publication->signature;
-$citizen_key = $publication->citizen->key;
-$citizen_signature = $publication->citizen->signature;
+if (isset($publication->citizen)) {
+  $citizen_key = $publication->citizen->key;
+  $citizen_signature = $publication->citizen->signature;
+  unset($publication->citizen);
+}
 $publication->signature = '';
-$publication->citizen->key = '';
-$publication->citizen->signature = '';
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $verify = openssl_verify($data, base64_decode($signature), public_key($publication->key), OPENSSL_ALGO_SHA256);
 if ($verify != 1)
   error("Wrong ballot signature");
 
 $publication->signature = $signature;
-$publication->citizen->key = $citizen_key;
-$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
-if ($verify != 1)
-  error("Wrong citizen signature");
+if (isset($citizen_key))
+  $publication->citizen = array('key' => $citizen_key, 'signature' => '');
+  $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+  $verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
+  if ($verify != 1)
+    error("Wrong citizen signature");
+  $publication->citizen->signature = $citizen_signature;
+}
 
 $station_key = file_get_contents('../id_rsa.pub');
 if ($publication->station->key !== stripped_key($station_key))
