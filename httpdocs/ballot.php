@@ -70,6 +70,8 @@ if (isset($citizen_key)) {
   $verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
   if ($verify != 1)
     error("Wrong citizen signature");
+  if ($citizen_key != $publication->citizen->key)
+    error("Mismatching citizen keys $citizen_key != " . $publication->citizen->key);
   $publication->citizen->signature = $citizen_signature;
 }
 
