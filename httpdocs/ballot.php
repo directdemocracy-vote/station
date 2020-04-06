@@ -56,6 +56,8 @@ if (isset($publication->citizen)) {
   $citizen_key = $publication->citizen->key;
   $citizen_signature = $publication->citizen->signature;
   unset($publication->citizen);
+} else {
+  error("Missing citizen field");
 }
 $publication->signature = '';
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
