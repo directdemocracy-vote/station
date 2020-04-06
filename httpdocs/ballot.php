@@ -65,7 +65,7 @@ if ($verify != 1)
 
 $publication->signature = $signature;
 if (isset($citizen_key)) {
-  $publication->citizen = array('key' => $citizen_key, 'signature' => '');
+  $publication->citizen = (object)['key' => $citizen_key, 'signature' => ''];
   $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
   $verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
   if ($verify != 1)
