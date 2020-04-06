@@ -85,6 +85,10 @@ if (isset($json->error))
   error($json->error);
 
 # clear the link between the registration and the ballot, so that we won't be able to retrieve the vote of the citizen
+$mysqli = new mysqli($database_host, $database_username, $database_password, $database_name);
+if ($mysqli->connect_errno)
+  error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
+$mysqli->set_charset('utf8mb4');
 $query = "UPDATE ballot SET `key`='', signature='' " .
          "WHERE citizenKey = '$publication->key' AND referendum = '$publication->referendum'";
 $mysqli->query($query) or error($mysqli->error);
