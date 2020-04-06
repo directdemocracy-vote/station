@@ -102,16 +102,27 @@ openssl_free_key($private_key);
 if ($success === FALSE)
   error("Failed to sign ballot.");
 $publication->station->signature = base64_encode($signature);
+# publish the ballot
+$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$options = array('http' => array('method' => 'POST',
+                                 'content' => $data,
+                                 'header' => "Content-Type: application/json\r\n" .
+                                             "Accept: application/json\r\n"));
+$response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
+$json = json_decode($response);
+if (isset($json->error))
+  error($json->error);
 
+# save ballot and citizen key and signature in database
 $mysqli = new mysqli($database_host, $database_username, $database_password, $database_name);
 if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
-
 $query = "INSERT INTO ballot(`schema`, `key`, signature, published, expires, referendum, citizenKey, citizenSignature) " .
          "VALUES('$publication->schema', '$publication->key', '$publication->signature', " .
          "$publication->published, $publication->expires, '$publication->referendum', '$citizen_key', '$citizen_signature')";
 $mysqli->query($query) or error($mysqli->error);
+$mysqli->close();
 
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 die("{\"ballot\":$data}");
