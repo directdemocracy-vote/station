@@ -51,12 +51,13 @@ $now = floatval(microtime(true) * 1000);  # milliseconds
 if ($publication->expires < $now - 60000)  # allowing a 1 minute error
   error("Expiration date in the past: $publication->expires < $now");
 
+if (!isset($publication->citizen))
+  error("Missing citizen field");
+
 $signature = $publication->signature;
-if (isset($publication->citizen)) {
-  $citizen_key = $publication->citizen->key;
-  $citizen_signature = $publication->citizen->signature;
-  unset($publication->citizen);
-}
+$citizen_key = $publication->citizen->key;
+$citizen_signature = $publication->citizen->signature;
+unset($publication->citizen);
 
 $publication->signature = '';
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -65,16 +66,11 @@ if ($verify != 1)
   error("Wrong ballot signature");
 
 $publication->signature = $signature;
-if (isset($citizen_key)) {
-  $publication->citizen = (object)['key' => $citizen_key, 'signature' => ''];
-  $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-  $verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
-  if ($verify != 1)
-    error("Wrong citizen signature");
-  $publication->citizen->signature = $citizen_signature;
-  if ($publication->citizen->key !== $citizen_key)
-    error("Mismatch");
-}
+$publication->citizen = (object)['key' => $citizen_key, 'signature' => ''];
+$data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$verify = openssl_verify($data, base64_decode($citizen_signature), public_key($citizen_key), OPENSSL_ALGO_SHA256);
+if ($verify != 1)
+  error("Wrong citizen signature");
 
 $station_key = file_get_contents('../id_rsa.pub');
 if ($publication->station->key !== stripped_key($station_key))
@@ -90,10 +86,12 @@ if (substr($trustee, 0, 8) !== 'https://')
 # check if citizen is allowed by trustee to vote to this referendum
 
 $allowed = file_get_contents("$trustee/can_vote.php?referendum=" . urlencode($publication->referendum) .
-                             "&citizen=" . urlencode($publication->citizen->key));
+                             "&citizen=" . urlencode($citizen_key));
 if ($allowed !== 'yes')
   die("Citizen is not allowed to vote to this referendum by trustee: $allowed");
-$publication->citizen->key = '';
+
+# remove the citizen key and signature, sign the ballot and publish it
+unset($publication->citizen);
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $private_key = openssl_get_privatekey("file://../id_rsa");
 if ($private_key == FALSE)
@@ -114,9 +112,6 @@ $query = "INSERT INTO ballot(`schema`, `key`, signature, published, expires, ref
          "VALUES('$publication->schema', '$publication->key', '$publication->signature', " .
          "$publication->published, $publication->expires, '$publication->referendum', '$citizen_key', '$citizen_signature')";
 $mysqli->query($query) or error($mysqli->error);
-
-if ($citizen_key != $publication->citizen->key)
-  error("Mismatching citizen keys $citizen_key != " . $publication->citizen->key);
 
 $data = json_encode($publication, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 die("{\"ballot\":$data}");
