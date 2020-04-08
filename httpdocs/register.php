@@ -135,7 +135,6 @@ if ($private_key == FALSE)
   error("Failed to read private key.");
 $signature = '';
 $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
-openssl_free_key($private_key);
 if ($success === FALSE)
   error("Failed to sign ballot.");
 $ballot->station->signature = base64_encode($signature);
@@ -152,11 +151,9 @@ if (isset($json->error))
 
 # sign the registration and publish it
 $data = json_encode($registration, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$private_key = openssl_get_privatekey("file://../id_rsa");
-if ($private_key == FALSE)
-  error("Failed to read private key.");
 $signature = '';
 $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
+openssl_free_key($private_key);
 if ($success === FALSE)
   error("Failed to sign registration.");
 $registration->station->signature = base64_encode($signature);
