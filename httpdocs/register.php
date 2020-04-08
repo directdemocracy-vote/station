@@ -179,5 +179,6 @@ $query = "INSERT INTO ballot(`schema`, `key`, signature, published, expires, ref
 $mysqli->query($query) or error($mysqli->error);
 $mysqli->close();
 
+# send back signed ballot and signed registration to citizen
 die("{\"ballot\":$ballot_data,\"registration\":$registration_data}");
 ?>
