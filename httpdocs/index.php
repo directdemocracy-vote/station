@@ -27,7 +27,7 @@
           <div class="directdemocracy-subtitle" style="position:relative;top:0;margin-bottom:40px">
             <h3>This webservice provides a polling station</h3>
             <h3>allowing citizens to vote in directdemocracy.</h3>
-            <h3>Processes and results are auditable by anyone.</h3>
+            <h3>Process and results are auditable by anyone.</h3>
           </div>
         </div>
         <br>
