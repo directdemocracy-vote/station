@@ -1,6 +1,8 @@
 <?php
 require_once '../php/database.php';
 
+$publisher = 'https://publisher.directdemocracy.vote';
+
 function error($message) {
   die("{\"error\":\"$message\"}");
 }
@@ -79,13 +81,12 @@ if ($registration->station->key !== $station_key)
   error("Wrong station key in registration");
 
 # verify ballot signature
-$signature = $ballot->signature;
+$ballot_signature = $ballot->signature;
 $ballot->signature = '';
 $data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $verify = openssl_verify($data, base64_decode($signature), public_key($ballot->key), OPENSSL_ALGO_SHA256);
 if ($verify != 1)
   error("Wrong ballot signature");
-$ballot->signature = $signature;
 
 # verify registration signature by citizen
 $signature = $registration->signature;
@@ -96,22 +97,13 @@ if ($verify != 1)
   error("Wrong signature in registration");
 $registration->signature = $signature;
 
-# get trustee url from publisher
-# FIXME: this should not be needed if checking from publications only
-$publisher = 'https://publisher.directdemocracy.vote';
-$trustee = file_get_contents("$publisher/trustee_url.php?referendum=" . urlencode($ballot->referendum));
-
-if (substr($trustee, 0, 8) !== 'https://')
-  die("Cannot get referendum trustee: $trustee");
-
 # check if citizen is allowed by trustee to vote to this referendum
-# FIXME: should check from publications only
-$allowed = file_get_contents("$trustee/can_vote.php?referendum=" . urlencode($registration->referendum) .
+$allowed = file_get_contents("$publisher/can_vote.php?referendum=" . urlencode($registration->referendum) .
                              "&citizen=" . urlencode($registration->key));
 if ($allowed !== 'yes')
   die("Citizen is not allowed to vote to this referendum by trustee: $allowed");
 
-# sign the ballot
+# sign the ballot (the original signature was removed)
 $data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $private_key = openssl_get_privatekey("file://../id_rsa");
 if ($private_key == FALSE)
@@ -121,17 +113,6 @@ $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
 if ($success === FALSE)
   error("Failed to sign ballot.");
 $ballot->station->signature = base64_encode($signature);
-
-# publish the ballot FIXME: it should be published later
-$ballot_data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$options = array('http' => array('method' => 'POST',
-                                 'content' => $ballot_data,
-                                 'header' => "Content-Type: application/json\r\n" .
-                                             "Accept: application/json\r\n"));
-$response = file_get_contents("$publisher/publish.php", false, stream_context_create($options));
-$json = json_decode($response);
-if (isset($json->error))
-  error($json->error);
 
 # sign the registration and publish it now
 $data = json_encode($registration, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -158,7 +139,7 @@ if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
 $query = "INSERT INTO ballot(`schema`, `key`, signature, published, expires, referendum, citizenKey, citizenSignature) " .
-         "VALUES('$ballot->schema', '$ballot->key', '$ballot->signature', " .
+         "VALUES('$ballot->schema', '$ballot->key', '$ballot_signature', " .
          "$ballot->published, $ballot->expires, '$ballot->referendum', '$registration->key', '$registration->signature')";
 $mysqli->query($query) or error($mysqli->error);
 $mysqli->close();
