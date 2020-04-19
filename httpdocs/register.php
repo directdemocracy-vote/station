@@ -113,6 +113,7 @@ $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
 if ($success === FALSE)
   error("Failed to sign ballot.");
 $ballot->station->signature = base64_encode($signature);
+$ballot_data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
 # sign the registration and publish it now
 $data = json_encode($registration, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
