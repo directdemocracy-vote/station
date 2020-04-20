@@ -106,7 +106,7 @@ if ($allowed !== 'yes')
 # sign the ballot (the original signature was removed)
 $data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $private_key = openssl_get_privatekey("file://../id_rsa");
-if ($private_key == FALSE)
+if ($private_key === FALSE)
   error("Failed to read private key.");
 $signature = '';
 $success = openssl_sign($data, $signature, $private_key, OPENSSL_ALGO_SHA256);
