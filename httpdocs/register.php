@@ -101,7 +101,7 @@ $registration->signature = $signature;
 $allowed = file_get_contents("$publisher/can_vote.php?referendum=" . urlencode($registration->referendum) .
                              "&citizen=" . urlencode($registration->key));
 if ($allowed !== 'yes')
-  error("Citizen is not allowed to vote to this referendum by trustee: $allowed");
+  error("Citizen is not allowed to vote to this referendum by trustee.");
 
 # sign the ballot (the original signature was removed)
 $data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
