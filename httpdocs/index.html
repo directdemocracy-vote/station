@@ -1,43 +1,31 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>station.directdemocracy.vote</title>
+    <title>app.directdemocracy.vote</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://directdemocracy.vote/css/directdemocracy.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="https://directdemocracy.vote/js/crypto-js.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/framework7-icons@5.0.5/css/framework7-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   </head>
   <body>
-    <div class='corner-ribbon' title="This web site is in beta quality: it may have bugs and change without notice. Please, report any problem to info@<?=$base_domain?>.">Beta</div>
-    <main role='main'>
-      <div class="jumbotron directdemocracy-title">
-        <div class="container">
-          <div class="row" style="margin-top:30px;margin-bottom:30px">
-            <div class="col-sd-1" style="margin-right:20px;margin-top:10px"><img class="directdemocracy-title-logo" src="//directdemocracy.vote/images/directdemocracy-title.png"></div>
-            <div class="col-sd-11">
-              <h1><b>direct</b>democracy</h1>
-              <div style="font-size:150%">polling station</div>
-            </div>
-          </div>
-          <div class="directdemocracy-subtitle" style="position:relative;top:0;margin-bottom:40px">
-            <h3>This webservice provides a polling station</h3>
-            <h3>allowing citizens to vote in directdemocracy.</h3>
-            <h3>Process and results are auditable by anyone.</h3>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="columns">
+          <div class="column is-narrow"><i class="f7-icons" style="font-size:640%;rotate:-90deg">hand_point_right</i><i class="f7-icons" style="font-size:640%">square_arrow_down</i></div>
+          <div class="column">
+            <p class="title is-1">direct<b>democracy</b></p>
+            <p class="subtitle is-3">a polling station webservice guaranteeing the anonymity of votes</p>
           </div>
         </div>
-        <br>
       </div>
-    </main>
-    <div>
-      <hr>
-      <footer>
-        <p style='text-align:center'><small>Made by citizens for citizens</small></p>
-      </footer>
-    </div>
+    </section>
+    <section class="section">
+      <p>
+        This web site is the home of the sample <i>directdemocracy</i> polling station webservice.
+        Currently, this webservice is under development.
+        More information is available from our <a href="https://github.com/directdemocracy-vote/station" target="_blank">GitHub repository</a>.
+      </p>
+    </section>
   </body>
 </html>
