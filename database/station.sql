@@ -5,12 +5,14 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `participation` (
   `id` int(11) NOT NULL,
-  `referendum` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `referendumFingerprint` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `publicKey` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `privateKey` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL
-)
+  `referendumFingerprint` varchar(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `referendum` varchar(512) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `publicKey` varchar(512) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `privateKey` varchar(2048) CHARACTER SET ascii COLLATE ascii_bin NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 ALTER TABLE `participation`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `referendumFingerprint` (`referendumFingerprint`),
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;
