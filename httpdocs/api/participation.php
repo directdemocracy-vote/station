@@ -28,8 +28,8 @@ $mysqli->set_charset('utf8mb4');
 $referendum = $mysqli->escape_string($_GET['referendum']);
 $fingerprint = $referendum;
 $result = $mysqli->query ("SELECT publicKey FROM participation WHERE referendumFingerprint='$fingerprint'") or error($mysqli->error);
-if ($result) {
-  $p = $result->fetch_assoc();
+$p = $result->fetch_assoc();
+if ($p) {
   $publicKey = $p['publicKey'];
   $result->free();
 } else {
