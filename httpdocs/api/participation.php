@@ -1,5 +1,5 @@
 <?php
-require_once '../php/database.php';
+require_once '../../php/database.php';
 
 function error($message) {
   die("{\"error\":\"$message\"}");
