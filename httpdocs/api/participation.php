@@ -27,10 +27,11 @@ $mysqli->set_charset('utf8mb4');
 
 $referendum = $mysqli->escape_string($_GET['referendum']);
 $fingerprint = sha1($referendum);
-$result = $mysqli->query ("SELECT publicKey FROM participation WHERE referendumFingerprint='$fingerprint'") or error($mysqli->error);
+$result = $mysqli->query ("SELECT publicKey, published FROM participation WHERE referendumFingerprint='$fingerprint'") or error($mysqli->error);
 $p = $result->fetch_assoc();
 if ($p) {
   $publicKey = $p['publicKey'];
+  $published = intval($p['published']);
   $result->free();
 } else {
   $config = array("digest_alg" => "sha256", "private_key_bits" => 2048, "private_key_type" => OPENSSL_KEYTYPE_RSA);
@@ -38,8 +39,9 @@ if ($p) {
   openssl_pkey_export($keyPair, $privateKey);
   $details = openssl_pkey_get_details($keyPair);
   $publicKey = $details["key"];
-  $query = "INSERT INTO participation(referendum, referendumFingerprint, publicKey, privateKey) "
-          ."VALUES('$referendum', '$fingerprint', '$publicKey', '$privateKey')";
+  $published = intval(microtime(true) * 1000);
+  $query = "INSERT INTO participation(referendum, referendumFingerprint, publicKey, privateKey, published) "
+          ."VALUES('$referendum', '$fingerprint', '$publicKey', '$privateKey', $published)";
   $mysqli->query($query) or error($mysqli->error);
 }
 $mysqli->close();
@@ -47,7 +49,7 @@ $participation = array();
 $participation['schema'] = 'https://directdemocracy.vote/json-schema/0.0.2/participation.schema.json';
 $participation['key'] = stripped_key(file_get_contents('../../id_rsa.pub'));
 $participation['signature'] = '';
-$participation['published'] = intval(microtime(true) * 1000);
+$participation['published'] = $published;
 $participation['referendum'] = $referendum;
 $participation['participation'] = stripped_key($publicKey);
 $data = json_encode($participation, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

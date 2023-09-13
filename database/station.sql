@@ -8,7 +8,8 @@ CREATE TABLE `participation` (
   `referendumFingerprint` varchar(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `referendum` varchar(512) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `publicKey` varchar(512) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-  `privateKey` varchar(2048) CHARACTER SET ascii COLLATE ascii_bin NOT NULL
+  `privateKey` varchar(2048) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  `published` bigint(15) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 ALTER TABLE `participation`
