@@ -26,7 +26,7 @@ if ($mysqli->connect_errno)
 $mysqli->set_charset('utf8mb4');
 
 $referendum = $mysqli->escape_string($_GET['referendum']);
-$fingerprint = $referendum;
+$fingerprint = sha1($referendum);
 $result = $mysqli->query ("SELECT publicKey FROM participation WHERE referendumFingerprint='$fingerprint'") or error($mysqli->error);
 $p = $result->fetch_assoc();
 if ($p) {
