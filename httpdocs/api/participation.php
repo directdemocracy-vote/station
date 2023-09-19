@@ -5,9 +5,9 @@ function error($message) {
   die("{\"error\":\"$message\"}");
 }
 
-function stripped_key($public_key) {
-  $stripped = str_replace("-----BEGIN PUBLIC KEY-----", "", $public_key);
-  $stripped = str_replace("-----END PUBLIC KEY-----", "", $stripped);
+function stripped_key($key, $type) {
+  $stripped = str_replace("-----BEGIN $type KEY-----", "", $public_key);
+  $stripped = str_replace("-----END $type KEY-----", "", $stripped);
   $stripped = str_replace("\r\n", '', $stripped);
   $stripped = str_replace("\n", '', $stripped);
   return $stripped;
@@ -36,9 +36,10 @@ if ($p) {
 } else {
   $config = array("digest_alg" => "sha256", "private_key_bits" => 2048, "private_key_type" => OPENSSL_KEYTYPE_RSA);
   $keyPair = openssl_pkey_new($config);
-  openssl_pkey_export($keyPair, $privateKey);
+  openssl_pkey_export($keyPair, $pk);
+  $privateKey = stripped_key($pk, 'PRIVATE'); 
   $details = openssl_pkey_get_details($keyPair);
-  $publicKey = $details["key"];
+  $publicKey = stripped_key($details["key"], 'PUBLIC');
   $published = intval(microtime(true) * 1000);
   $query = "INSERT INTO participation(referendum, referendumFingerprint, publicKey, privateKey, published) "
           ."VALUES('$referendum', '$fingerprint', '$publicKey', '$privateKey', $published)";
@@ -47,11 +48,11 @@ if ($p) {
 $mysqli->close();
 $participation = array();
 $participation['schema'] = 'https://directdemocracy.vote/json-schema/0.0.2/participation.schema.json';
-$participation['key'] = stripped_key(file_get_contents('../../id_rsa.pub'));
+$participation['key'] = stripped_key(file_get_contents('../../id_rsa.pub'), 'PUBLIC');
 $participation['signature'] = '';
 $participation['published'] = $published;
 $participation['referendum'] = $referendum;
-$participation['participation'] = stripped_key($publicKey);
+$participation['blindKey'] = $publicKey;
 $data = json_encode($participation, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $pk = openssl_get_privatekey("file://../../id_rsa");
 if ($pk === FALSE)
