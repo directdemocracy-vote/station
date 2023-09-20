@@ -50,8 +50,8 @@ $mysqli = new mysqli($database_host, $database_username, $database_password, $da
 if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
-$participation = $mysqli->escape_string($registration->participation);
-$query = "SELECT referendumFingerprint, publicKey, privateKey FROM participation WHERE publicKey='$participation'";
+$blindKey = $mysqli->escape_string($registration->blindKey);
+$query = "SELECT referendumFingerprint, publicKey, privateKey FROM participation WHERE publicKey='$blindKey'";
 $result = $mysqli->query($query) or error($mysqli->error);
 $participation = $result->fetch_assoc();
 if (!$participation)
@@ -69,7 +69,7 @@ $ballot['key'] = stripped_key(file_get_contents('../../id_rsa.pub'), 'PUBLIC');
 $ballot['signature'] = '';
 $ballot['published'] = $published;
 $ballot['encryptedVote'] = $participation['encryptedVote'];
-$ballot['blindKey'] = $participation['publicKey'];
+$ballot['blindKey'] = $blindKey;
 $ballot['blindSignature'] = blind_sign($participation['encryptedVoted'], $participation['privateKey']);
 $data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $pk = openssl_get_privatekey("file://../../id_rsa");
