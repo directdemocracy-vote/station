@@ -18,6 +18,15 @@ function stripped_key($key, $type) {
   return $stripped;
 }
 
+function unstripped_key($key, $type) {
+  $unstripped_key = "-----BEGIN $type KEY-----\n";
+  $l = strlen($key);
+  for($i = 0; $i < $l; $i += 64)
+    $unstripped_key .= substr($key, $i, 64) . "\n";
+  $unstripped_key.= "-----END $type KEY-----";
+  return $unstripped_key;
+}
+
 function blindSign($message, $privateKey) {
   return 'blind signature';  // FIXME: implement blind signature for $message using $privateKey
 }
@@ -33,7 +42,7 @@ if (!isset($registration->signature))
 $signature = $registration->signature;
 $registration->signature = '';
 $data = json_encode($registration, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$verify = openssl_verify($data, base64_decode($signature), public_key($registration->key), OPENSSL_ALGO_SHA256);
+$verify = openssl_verify($data, base64_decode($signature), unstripped_key($registration->key, 'PUBLIC'), OPENSSL_ALGO_SHA256);
 if ($verify != 1)
   error("Wrong registration signature");
 # check if the citizen is allowed to vote
