@@ -19,7 +19,7 @@ function stripped_key($key, $type) {
 }
 
 function blindSign($message, $privateKey) {
-  return 'blind signature';  // FIXME: implement blind signature for message
+  return 'blind signature';  // FIXME: implement blind signature for $message using $privateKey
 }
 
 if (!$registration)
