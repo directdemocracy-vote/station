@@ -52,7 +52,7 @@ $referendumFingerprint = $participation['referendumFingerprint'];
 $citizenFingerprint = sha1($registration->key);
 $answer = file_get_contents("https://notary.directdemocracy.vote/api/can_vote.php?referendum=$referendumFingerprint&citizen=$citizenFingerprint");
 if ($answer !== 'Yes')
-  error('Not allowed to vote');
+  error("Not allowed to vote: $answer");
 # create ballot with blind signature
 $ballot = array();
 $ballot['schema'] = 'https://directdemocracy.vote/json-schema/0.0.2/ballot.schema.json';
