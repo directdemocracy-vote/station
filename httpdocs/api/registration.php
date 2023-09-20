@@ -11,7 +11,7 @@ header("Access-Control-Allow-Headers: content-type");
 $registration = json_decode(file_get_contents("php://input"));
 
 function stripped_key($key, $type) {
-  $stripped = str_replace("-----BEGIN $type KEY-----", "", $public_key);
+  $stripped = str_replace("-----BEGIN $type KEY-----", "", $key);
   $stripped = str_replace("-----END $type KEY-----", "", $stripped);
   $stripped = str_replace("\r\n", '', $stripped);
   $stripped = str_replace("\n", '', $stripped);
