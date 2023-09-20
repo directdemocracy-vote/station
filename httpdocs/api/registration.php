@@ -53,7 +53,7 @@ $citizenFingerprint = sha1($registration->key);
 $answer = file_get_contents("https://notary.directdemocracy.vote/api/can_vote.php?referendum=$referendumFingerprint&citizen=$citizenFingerprint");
 if ($answer != 'Yes')
   error('Not allowed to vote');
-# publish ballot with blind signature
+# create ballot with blind signature
 $ballot = array();
 $ballot['schema'] = 'https://directdemocracy.vote/json-schema/0.0.2/ballot.schema.json';
 $ballot['key'] = stripped_key(file_get_contents('../../id_rsa.pub'), 'PUBLIC');
@@ -65,12 +65,21 @@ $ballot['blindSignature'] = blind_sign($participation['encryptedVoted'], $partic
 $data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 $pk = openssl_get_privatekey("file://../../id_rsa");
 if ($pk === FALSE)
-  error("Failed to read private key.");
+  error("Failed to read private key");
 $signature = '';
 $success = openssl_sign($data, $signature, $pk, OPENSSL_ALGO_SHA256);
 if ($success === FALSE)
   error("Failed to sign ballot.");
 $ballot['signature'] = base64_encode($signature);
 $data = json_encode($ballot, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+# publish ballot
+$opts = array('http' => array('method' => 'POST', 'header' => 'Content-type: application/json', 'content' => $data));
+$context = stream_context_create($opts);
+$response = file_get_contents('https://notary.directdemocracy.vote/api/publish.sh', false, $context);
+if ($reponse === false)
+  error('Bad response from notary for publication of ballot');
+$r = json_decode($response);
+if (isset($r['error']))
+  error($r['error']);
 die($data);
 ?>
