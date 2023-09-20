@@ -56,7 +56,7 @@ $result = $mysqli->query($query) or error($mysqli->error);
 $participation = $result->fetch_assoc();
 if (!$participation)
   error("Participation not found");
-$results->free();
+$result->free();
 $referendumFingerprint = $participation['referendumFingerprint'];
 $citizenFingerprint = sha1($registration->key);
 $answer = file_get_contents("https://notary.directdemocracy.vote/api/can_vote.php?referendum=$referendumFingerprint&citizen=$citizenFingerprint");
