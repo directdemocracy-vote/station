@@ -51,15 +51,18 @@ if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
 $blindKey = $mysqli->escape_string($registration->blindKey);
-$query = "SELECT referendumFingerprint, publicKey, privateKey FROM participation WHERE publicKey='$blindKey'";
+$query = "SELECT referendum, publicKey, privateKey FROM participation WHERE publicKey='$blindKey'";
 $result = $mysqli->query($query) or error($mysqli->error);
 $participation = $result->fetch_assoc();
 if (!$participation)
   error("Participation not found");
 $result->free();
-$referendumFingerprint = $participation['referendumFingerprint'];
-$citizenFingerprint = sha1($registration->key);
-$answer = file_get_contents("https://notary.directdemocracy.vote/api/can_vote.php?referendum=$referendumFingerprint&citizen=$citizenFingerprint");
+$referendum = $participation['referendum'];
+$citizen = $registration->key;
+$data = "{\"referendum\":\"$referendum\",\"citizen\":\"$citizen\"}";
+$opts = array('http' => array('method' => 'POST', 'header' => 'Content-type: application/json', 'content' => $data));
+$context = stream_context_create($opts);
+$answer = file_get_contents('https://notary.directdemocracy.vote/api/can_vote.php', false, $context);
 if ($answer !== 'Yes')
   error("Not allowed to vote: $answer");
 # create ballot with blind signature
