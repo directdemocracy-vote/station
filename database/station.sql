@@ -5,7 +5,6 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `participation` (
   `id` int(11) NOT NULL,
-  `referendumFingerprint` varchar(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `referendum` varchar(512) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `publicKey` varchar(512) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `privateKey` varchar(2048) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
@@ -14,6 +13,6 @@ CREATE TABLE `participation` (
 
 ALTER TABLE `participation`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `referendumFingerprint` (`referendumFingerprint`),
+  ADD UNIQUE KEY `referendum` (`referendum`),
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;

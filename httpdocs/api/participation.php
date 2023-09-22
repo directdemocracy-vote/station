@@ -26,8 +26,7 @@ if ($mysqli->connect_errno)
 $mysqli->set_charset('utf8mb4');
 
 $referendum = $mysqli->escape_string($_GET['referendum']);
-$fingerprint = sha1($referendum);
-$result = $mysqli->query ("SELECT publicKey, published FROM participation WHERE referendumFingerprint='$fingerprint'") or error($mysqli->error);
+$result = $mysqli->query ("SELECT publicKey, published FROM participation WHERE referendum='$referendum'") or error($mysqli->error);
 $p = $result->fetch_assoc();
 if ($p) {
   $publicKey = $p['publicKey'];
@@ -41,8 +40,8 @@ if ($p) {
   $details = openssl_pkey_get_details($keyPair);
   $publicKey = stripped_key($details["key"], 'PUBLIC');
   $published = intval(microtime(true) * 1000);
-  $query = "INSERT INTO participation(referendum, referendumFingerprint, publicKey, privateKey, published) "
-          ."VALUES('$referendum', '$fingerprint', '$publicKey', '$privateKey', $published)";
+  $query = "INSERT INTO participation(referendum, publicKey, privateKey, published) "
+          ."VALUES('$referendum', '$publicKey', '$privateKey', $published)";
   $mysqli->query($query) or error($mysqli->error);
 }
 $mysqli->close();
