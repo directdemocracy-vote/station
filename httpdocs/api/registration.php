@@ -35,7 +35,7 @@ if (!$registration)
   error("Unable to parse JSON post");
 if (!isset($registration->schema))
   error("Unable to read registration schema field");
-if ($registration->schema != "https://directdemocracy.vote/json-schema/0.0.2/registration.schema.json")
+if ($registration->schema != "https://directdemocracy.vote/json-schema/0.2/registration.schema.json")
   error("Wrong registration schema");
 if (!isset($registration->signature))
   error("No registration signature");
@@ -67,7 +67,7 @@ if ($answer !== 'Yes')
   error("Not allowed to vote: $answer");
 # create ballot with blind signature
 $ballot = array();
-$ballot['schema'] = 'https://directdemocracy.vote/json-schema/0.0.2/ballot.schema.json';
+$ballot['schema'] = 'https://directdemocracy.vote/json-schema/0.2/ballot.schema.json';
 $ballot['key'] = stripped_key(file_get_contents('../../id_rsa.pub'), 'PUBLIC');
 $ballot['signature'] = '';
 $ballot['published'] = $published;
