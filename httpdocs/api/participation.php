@@ -46,7 +46,7 @@ if ($p) {
 }
 $mysqli->close();
 $participation = array();
-$participation['schema'] = 'https://directdemocracy.vote/json-schema/0.2/participation.schema.json';
+$participation['schema'] = 'https://directdemocracy.vote/json-schema/2/participation.schema.json';
 $participation['key'] = stripped_key(file_get_contents('../../id_rsa.pub'), 'PUBLIC');
 $participation['signature'] = '';
 $participation['published'] = $published;
