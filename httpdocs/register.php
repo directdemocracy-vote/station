@@ -62,14 +62,14 @@ $directdemocracy_version = substr($registration->schema, 41, -25);
 if ($directdemocracy_version !== '0.0.1')
   error("Unsupported registration version: $directdemocracy_version");
 
-$now = floatval(microtime(true) * 1000);  # milliseconds
-if ($ballot->expires < $now - 60000)  # allowing a 1 minute error
+$now = time();  # seconds
+if ($ballot->expires < $now - 60)  # allowing a 1 minute error
   error("Ballot expiration date in the past: $ballot->expires < $now");
 # FIXME: ballot published date should match referendum deadline
 # and expires date should match the referendum deadline + 1 year.
-if ($registration->published > $now + 60000)  # allowing a 1 minute error
+if ($registration->published > $now + 60)  # allowing a 1 minute error
   error("Registration publication date in the future: $registration->published > $now");
-if ($registration->expires < $now - 60000)  # allowing a 1 minute error
+if ($registration->expires < $now - 60)  # allowing a 1 minute error
   error("Registration expiration date in the past: $registration->expires < $now");
 
 if ($ballot->referendum != $registration->referendum)
