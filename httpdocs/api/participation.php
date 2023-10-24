@@ -39,7 +39,7 @@ if ($p) {
   $privateKey = stripped_key($pk, 'PRIVATE'); 
   $details = openssl_pkey_get_details($keyPair);
   $publicKey = stripped_key($details["key"], 'PUBLIC');
-  $published = intval(microtime(true) * 1000);
+  $published = time();
   $query = "INSERT INTO participation(referendum, publicKey, privateKey, published) "
           ."VALUES('$referendum', '$publicKey', '$privateKey', $published)";
   $mysqli->query($query) or error($mysqli->error);
