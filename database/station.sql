@@ -5,9 +5,6 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `vote` (
   `id` int(11) NOT NULL,
-  `key` blob NOT NULL,
-  `signature` blob NOT NULL,
-  `published` datetime NOT NULL,
   `appKey` blob NOT NULL,
   `appSignature` blob NOT NULL,
   `referendum` blob NOT NULL,
