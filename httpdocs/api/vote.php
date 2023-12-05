@@ -17,15 +17,11 @@ header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: content-type");
 
-if (!isset($_GET['referendum']))
-  error("Missing referendum argument");
-
 $mysqli = new mysqli($database_host, $database_username, $database_password, $database_name);
 if ($mysqli->connect_errno)
   error("Failed to connect to MySQL database: $mysqli->connect_error ($mysqli->connect_errno)");
 $mysqli->set_charset('utf8mb4');
 
-$referendum = $mysqli->escape_string($_GET['referendum']);
 $result = $mysqli->query ("SELECT publicKey, published FROM participation WHERE referendum='$referendum'") or error($mysqli->error);
 $p = $result->fetch_assoc();
 if ($p) {
