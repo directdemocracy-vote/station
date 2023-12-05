@@ -13,14 +13,15 @@ CREATE TABLE `vote` (
   `appSignature` blob NOT NULL,
   `referendum` blob NOT NULL,
   `number` int(11) NOT NULL,
-  `ballot` blob NOT NULL,
-  `answer` text COLLATE utf8mb4_unicode_ci NOT NULL,
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `ballot` binary(32) NOT NULL,
+  `answer` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE `participation`
+ALTER TABLE `vote`
   ADD PRIMARY KEY (`id`);
+  ADD UNIQUE KEY `referendum` (`referendum`,`ballot`) USING HASH;
 
-ALTER TABLE `participation`
+ALTER TABLE `vote`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 COMMIT;
