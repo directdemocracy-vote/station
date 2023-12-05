@@ -5,6 +5,16 @@ function error($message) {
   die("{\"error\":\"$message\"}");
 }
 
+function public_key($key) {
+  $public_key = "-----BEGIN PUBLIC KEY-----\n";
+  $key = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA' . $key . 'IDAQAB';
+  $l = strlen($key);
+  for($i = 0; $i < $l; $i += 64)
+    $public_key .= substr($key, $i, 64) . "\n";
+  $public_key.= "-----END PUBLIC KEY-----";
+  return $public_key;
+}
+
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: content-type");
@@ -55,7 +65,13 @@ if ($vote->appKey !== $PRODUCTION_APP_KEY && $vote->appKey !== $TEST_APP_KEY)
   error('unrecongized app key');
 
 # verify app signature
-
+$voteBytes = base64_decode("$vote->referendum==");
+$voteBytes .= pack('J', $vote->number);
+$voteBytes .= base64_decode("$vote->ballot");
+$voteBytes .= $vote->answer;
+$verify = openssl_verify($voteBytes, base64_decode("$vote->appSignature=="), public_key($vote->appKey), OPENSSL_ALGO_SHA384);
+if (!$verify)
+  error('failed to verify app signature');
 
 $query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, answer) VALUES("
         ."FROM_BASE64('$vote->appKey=='), "
