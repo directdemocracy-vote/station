@@ -31,7 +31,7 @@ function blind_verify($n, $e, $msg, $signature) {
   $em = gmp_export($m, 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
   if (strlen($em) !== $emLen)
     return "emLen mismatch: ".strlen($em)." !== $emLen";
-  $mHash = hash('sha384', hex2bin($msg), true);
+  $mHash = hash('sha384', $msg, true);
   $hLen = strlen($mHash);
   $sLen = 48;
   if ($emLen < strlen($mHash) + $sLen + 2)
