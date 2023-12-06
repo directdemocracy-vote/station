@@ -1,5 +1,6 @@
 <?php
-require_once '../../php/database.php';
+require '../../php/database.php';
+require '../../php/blind-sign.php';
 
 function error($message) {
   die("{\"error\":\"$message\"}");
@@ -69,9 +70,14 @@ $voteBytes = base64_decode("$vote->referendum==");
 $voteBytes .= pack('J', $vote->number);
 $voteBytes .= base64_decode("$vote->ballot");
 $voteBytes .= $vote->answer;
-$verify = openssl_verify($voteBytes, base64_decode("$vote->appSignature=="), public_key($vote->appKey), OPENSSL_ALGO_SHA384);
-if (!$verify)
-  error('failed to verify app signature');
+
+$public_key = openssl_pkey_get_public(public_key($vote->appKey));
+$details = openssl_pkey_get_details($public_key);
+$n = gmp_import($details['rsa']['n'], 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
+$e = gmp_import($details['rsa']['e'], 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
+$error = blind_verify($n, $e, $voteBytes, base64_decode("$vote->appSignature=="));
+if ($error !== '')
+  error("failed to verify app signature: $error");
 
 $query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, answer) VALUES("
         ."FROM_BASE64('$vote->appKey=='), "
