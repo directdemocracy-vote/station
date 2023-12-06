@@ -89,7 +89,7 @@ if (!$referendum) { # fetch it from notary and store deadline in database
   $publication_json = file_get_contents("$notary/api/proposal.php?signature=".urlencode($vote->referendum));
   $publication = json_decode($publication_json, true);
   $deadline = $publication['deadline'];
-  $query = "INSERT INTO referendum(signature, deadline) VALUES(FROM_BASE64('$vote->signature=='), $deadline)";
+  $query = "INSERT INTO referendum(signature, deadline) VALUES(FROM_BASE64('$vote->signature=='), FROM_UNIXTIME($deadline))";
   $mysqli->query($query) or error($mysqli->error);
 }
 
