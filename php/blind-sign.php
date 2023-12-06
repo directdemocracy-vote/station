@@ -23,9 +23,9 @@ function MGF1($mgfSeed, $maskLen) {
 function blind_verify($n, $e, $msg, $signature) {
   global $test_encoded_msg;
   $n_bytes = gmp_export($n, 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
-  if (strlen($n_bytes) !== strlen($signature) / 2)
+  if (strlen($n_bytes) !== strlen($signature))
     return "mismatch length for n and signature";
-  $s = gmp_init("0x$signature");
+  $s = gmp_import($signature, 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
   $m = gmp_powm($s, $e, $n);
   $modBits = strlen($n_bytes) * 8;
   $emLen = intval(ceil(($modBits - 1) / 8));
