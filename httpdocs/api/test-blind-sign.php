@@ -22,7 +22,7 @@ $blind_sig = gmp_init("0x$test_blind_sig");
 if (gmp_cmp(blind_sign($blinded_msg, $n, $e, $d), $blind_sig) === false)
   die("Failed to sign");
 
-$error = blind_verify($n, $e, $test_prep_msg, hex2bin($test_sig));
+$error = blind_verify($n, $e, hex2bin($test_prep_msg), hex2bin($test_sig));
 if ($error !== "")
   die("Failed to verify: $error");
 
