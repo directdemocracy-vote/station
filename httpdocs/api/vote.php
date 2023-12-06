@@ -2,6 +2,8 @@
 require '../../php/database.php';
 require '../../php/blind-sign.php';
 
+$notary = 'https://notary.directdemocracy.vote';
+
 function error($message) {
   die("{\"error\":\"$message\"}");
 }
@@ -78,6 +80,18 @@ $e = gmp_import($details['rsa']['e'], 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
 $error = blind_verify($n, $e, $voteBytes, base64_decode("$vote->appSignature=="));
 if ($error !== '')
   error("failed to verify app signature: $error voteBytes[".strlen($voteBytes)."] = ".base64_encode($voteBytes)."");
+
+$query = "SELECT deadline FROM referendum WHERE signature=FROM_BASE64('$vote->referendum==')";
+$result = $mysqli->query($query) or error($mysqli->error);
+$referendum = $result->fetch_assoc();
+$result->free();
+if (!$referendum) { # fetch it from notary and store deadline in database
+  $publication_json = file_get_contents("$notary/api/proposal.php?signature=".urlencode($vote->referendum));
+  $publication = json_decode($publication_json, true);
+  $deadline = $publication['deadline'];
+  $query = "INSERT INTO referendum(signature, deadline) VALUES(FROM_BASE64('$vote->signature=='), $deadline)";
+  $mysqli->query($query) or error($mysqli->error);
+}
 
 $query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, answer) VALUES("
         ."FROM_BASE64('$vote->appKey=='), "
