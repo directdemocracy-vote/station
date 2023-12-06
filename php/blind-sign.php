@@ -21,7 +21,6 @@ function MGF1($mgfSeed, $maskLen) {
 }
 
 function blind_verify($n, $e, $msg, $signature) {
-  global $test_encoded_msg;
   $n_bytes = gmp_export($n, 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
   if (strlen($n_bytes) !== strlen($signature))
     return "mismatch length for n and signature";
@@ -30,8 +29,6 @@ function blind_verify($n, $e, $msg, $signature) {
   $modBits = strlen($n_bytes) * 8;
   $emLen = intval(ceil(($modBits - 1) / 8));
   $em = gmp_export($m, 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
-  if (strcmp($em, hex2bin($test_encoded_msg)) !== 0)
-    return "wrong encoded message";
   if (strlen($em) !== $emLen)
     return "emLen mismatch: ".strlen($em)." !== $emLen";
   $mHash = hash('sha384', hex2bin($msg), true);
