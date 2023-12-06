@@ -77,7 +77,7 @@ $n = gmp_import($details['rsa']['n'], 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
 $e = gmp_import($details['rsa']['e'], 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
 $error = blind_verify($n, $e, $voteBytes, base64_decode("$vote->appSignature=="));
 if ($error !== '')
-  error("failed to verify app signature: $error voteBytes[".strlen($voteBytes)."] = \"".base64_encode($voteBytes)."\"");
+  error("failed to verify app signature: $error voteBytes[".strlen($voteBytes)."] = ".base64_encode($voteBytes)."");
 
 $query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, answer) VALUES("
         ."FROM_BASE64('$vote->appKey=='), "
