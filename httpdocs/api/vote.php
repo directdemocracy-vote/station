@@ -86,8 +86,7 @@ $query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, ans
         ."$vote->number, "
         ."FROM_BASE64('$vote->ballot'), "
         ."\"$vote->answer\") "
-        ."ON DUPLICATE KEY UPDATE appSignature=FROM_BASE64('$vote->appSignature'), number=$vote->number, answer=\"$vote->answer\";";
-die($query);
+        ."ON DUPLICATE KEY UPDATE appSignature=FROM_BASE64('$vote->appSignature=='), number=$vote->number, answer=\"$vote->answer\";";
 $mysqli->query($query) or error($mysqli->error);
 die("{\"status\":\"OK\"}");
 ?>
