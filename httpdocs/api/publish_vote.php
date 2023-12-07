@@ -50,7 +50,7 @@ while ($row = $result->fetch_assoc()) {
       'appKey' => $vote['appKey'],
       'appSignature' => $vote['appSignature'],
       'referendum' => $referendum,
-      'number' => $vote['number'],
+      'number' => intval($vote['number']),
       'ballot' => $vote['ballot'],
       'answer' => $vote['answer']
     );
