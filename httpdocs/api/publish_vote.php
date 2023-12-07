@@ -27,14 +27,19 @@ $private_key = openssl_get_privatekey("file://".__DIR__."/../../id_rsa");
 if ($private_key == FALSE)
   error("failed to read private key");
 
-$query = "SELECT REPLACE(REPLACE(TO_BASE64(signature), '\\n', ''), '=', ''), UNIX_TIMESTAMP(deadline) FROM referendum WHERE deadline <= NOW()";
+$query = "SELECT REPLACE(REPLACE(TO_BASE64(signature), '\\n', ''), '=', '') AS signature, UNIX_TIMESTAMP(deadline) AS deadline FROM referendum WHERE deadline <= NOW()";
 $result = $mysqli->query($query) or die($mysqli->error);
 $output = [];
 while ($row = $result->fetch_assoc()) {
   $referendum = $row['signature'];
   $deadline = intval($row['deadline']);
   $output += [$referendum => 0];
-  $query = "SELECT id, appKey, appSignature, number, ballot, answer FROM vote WHERE referendum=TO_BASE64('$referendum==')";
+  $query = "SELECT id, "
+          ."REPLACE(REPLACE(TO_BASE64(appKey), '\\n', ''), '=', ''), "
+          ."REPLACE(REPLACE(TO_BASE64(appSignature), '\\n', ''), '=', ''), "
+          ."number, "
+          ."REPLACE(TO_BASE64(ballot), '\\n', ''), "
+          ."answer FROM vote WHERE referendum=TO_BASE64('$referendum==')";
   $r = $mysqli->query($query) or error($mysqli->error);
   while($vote = $r->fetch_assoc()) {
     $vote = array(
