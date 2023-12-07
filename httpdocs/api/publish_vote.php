@@ -41,18 +41,18 @@ while ($row = $result->fetch_assoc()) {
           ."REPLACE(TO_BASE64(ballot), '\\n', '') AS ballot, "
           ."answer FROM vote WHERE referendum=FROM_BASE64('$referendum==')";
   $r = $mysqli->query($query) or error($mysqli->error);
-  while($vote = $r->fetch_assoc()) {
+  while($v = $r->fetch_assoc()) {
     $vote = array(
       'schema' => "https://directdemocracy.vote/json-schema/$version/vote.schema.json",
       'key' => $key,
       'signature' => '',
       'published' => $deadline,
-      'appKey' => $vote['appKey'],
-      'appSignature' => $vote['appSignature'],
+      'appKey' => $v['appKey'],
+      'appSignature' => $v['appSignature'],
       'referendum' => $referendum,
-      'number' => intval($vote['number']),
-      'ballot' => $vote['ballot'],
-      'answer' => $vote['answer']
+      'number' => intval($v['number']),
+      'ballot' => $v['ballot'],
+      'answer' => $v['answer']
     );
     $data = json_encode($vote, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     $signature = '';
@@ -71,7 +71,7 @@ while ($row = $result->fetch_assoc()) {
       error($response);
     if (isset($json->error))
       error($json->error);
-    $mysqli->query("DELETE FROM vote WHERE id=$vote[id]") or error($mysqli->error);
+    $mysqli->query("DELETE FROM vote WHERE id=$v[id]") or error($mysqli->error);
     $output[$referendum]++;
   }
   $r->free();
