@@ -71,7 +71,7 @@ while ($row = $result->fetch_assoc()) {
       error($response);
     if (isset($json->error))
       error($json->error);
-    $mysqli->query("DELETE FROM vote WHERE id=$r[id]") or error($mysqli->error);
+    $mysqli->query("DELETE FROM vote WHERE id=$vote[id]") or error($mysqli->error);
     $output[$referendum]++;
   }
   $r->free();
