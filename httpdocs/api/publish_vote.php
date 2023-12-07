@@ -78,6 +78,5 @@ while ($row = $result->fetch_assoc()) {
   $mysqli->query("DELETE FROM referendum WHERE signature=FROM_BASE64('$referendum==')") or error($mysqli->error);
 }
 $result->free();
-$list = json_encode($output, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-die("{\"published\": \"$list\"}");
+die(json_encode($output, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 ?>
