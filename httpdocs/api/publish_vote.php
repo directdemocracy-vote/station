@@ -39,7 +39,7 @@ while ($row = $result->fetch_assoc()) {
           ."REPLACE(REPLACE(TO_BASE64(appSignature), '\\n', ''), '=', ''), "
           ."number, "
           ."REPLACE(TO_BASE64(ballot), '\\n', ''), "
-          ."answer FROM vote WHERE referendum=TO_BASE64('$referendum==')";
+          ."answer FROM vote WHERE referendum=FROM_BASE64('$referendum==')";
   $r = $mysqli->query($query) or error($mysqli->error);
   while($vote = $r->fetch_assoc()) {
     $vote = array(
@@ -49,7 +49,7 @@ while ($row = $result->fetch_assoc()) {
       'published' => $deadline,
       'appKey' => $vote['appKey'],
       'appSignature' => $vote['appSignature'],
-      'referendum' => $vote['referendum'],
+      'referendum' => $referendum,
       'number' => $vote['number'],
       'ballot' => $vote['ballot'],
       'answer' => $vote['answer']
