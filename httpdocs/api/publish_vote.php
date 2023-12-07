@@ -16,7 +16,7 @@ header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: content-type");
 
-$version = "2";
+$version = 2;
 $notary = 'https://notary.directdemocracy.vote';
 
 $public_key_file = fopen(__DIR__."/../../id_rsa.pub", "r") or error("unable to open public key file");
