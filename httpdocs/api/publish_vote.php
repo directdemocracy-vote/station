@@ -69,7 +69,7 @@ while ($row = $result->fetch_assoc()) {
     $json = json_decode($response);
     if (json_last_error() !== JSON_ERROR_NONE)
       error($response);
-    if (isset($json->error))
+    if (isset($json->error) && $json->error !== 'already existing publication')
       error($json->error);
     $mysqli->query("DELETE FROM vote WHERE id=$v[id]") or error($mysqli->error);
     $output[$referendum]++;
