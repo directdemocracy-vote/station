@@ -35,10 +35,10 @@ while ($row = $result->fetch_assoc()) {
   $deadline = intval($row['deadline']);
   $output += [$referendum => 0];
   $query = "SELECT id, "
-          ."REPLACE(REPLACE(TO_BASE64(appKey), '\\n', ''), '=', ''), "
-          ."REPLACE(REPLACE(TO_BASE64(appSignature), '\\n', ''), '=', ''), "
+          ."REPLACE(REPLACE(TO_BASE64(appKey), '\\n', ''), '=', '') AS appKey, "
+          ."REPLACE(REPLACE(TO_BASE64(appSignature), '\\n', ''), '=', '') AS appSignature, "
           ."number, "
-          ."REPLACE(TO_BASE64(ballot), '\\n', ''), "
+          ."REPLACE(TO_BASE64(ballot), '\\n', '') AS ballot, "
           ."answer FROM vote WHERE referendum=FROM_BASE64('$referendum==')";
   $r = $mysqli->query($query) or error($mysqli->error);
   while($vote = $r->fetch_assoc()) {
