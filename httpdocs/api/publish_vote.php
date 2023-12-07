@@ -20,7 +20,7 @@ $private_key = openssl_get_privatekey("file://".__DIR__."../../id_rsa");
 if ($private_key == FALSE)
   error("failed to read private key");
 
-$query = "SELECT REPLACE(REPLACE(TO_BASE64(signature), '\\n', ''), '=', ''), UNIX_TIMESTAMP(deadline) FROM referendum";
+$query = "SELECT REPLACE(REPLACE(TO_BASE64(signature), '\\n', ''), '=', ''), UNIX_TIMESTAMP(deadline) FROM referendum WHERE deadline <= NOW()";
 $result = $mysqli->query($query) or die($mysqli->error);
 $output = [];
 while ($row = $result->fetch_assoc()) {
