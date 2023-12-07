@@ -20,7 +20,7 @@ $version = 2;
 $notary = 'https://notary.directdemocracy.vote';
 
 $public_key_file = fopen(__DIR__."/../../id_rsa.pub", "r") or error("unable to open public key file");
-$k = fread($public_key_file, filesize("../../id_rsa.pub"));
+$k = fread($public_key_file, filesize(__DIR__."/../../id_rsa.pub"));
 fclose($public_key_file);
 $key = stripped_key($k);
 $private_key = openssl_get_privatekey("file://".__DIR__."/../../id_rsa");
