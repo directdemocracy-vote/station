@@ -9,13 +9,13 @@ function error($message) {
 }
 
 function public_key($key) {
-  $public_key = "-----BEGIN PUBLIC KEY-----\n";
+  $publicKey = "-----BEGIN PUBLIC KEY-----\n";
   $key = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA' . $key . 'IDAQAB';
   $l = strlen($key);
   for($i = 0; $i < $l; $i += 64)
-    $public_key .= substr($key, $i, 64) . "\n";
-  $public_key.= "-----END PUBLIC KEY-----";
-  return $public_key;
+    $publicKey .= substr($key, $i, 64) . "\n";
+  $publicKey.= "-----END PUBLIC KEY-----";
+  return $publicKey;
 }
 
 header("Content-Type: application/json");
@@ -73,8 +73,8 @@ $voteBytes .= pack('J', $vote->number);
 $voteBytes .= base64_decode("$vote->ballot");
 $voteBytes .= $vote->answer;
 
-$public_key = openssl_pkey_get_public(public_key($vote->appKey));
-$details = openssl_pkey_get_details($public_key);
+$publicKey = openssl_pkey_get_public(public_key($vote->appKey));
+$details = openssl_pkey_get_details($publicKey);
 $n = gmp_import($details['rsa']['n'], 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
 $e = gmp_import($details['rsa']['e'], 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST);
 $error = blind_verify($n, $e, $voteBytes, base64_decode("$vote->appSignature=="));
