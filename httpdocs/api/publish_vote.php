@@ -78,5 +78,8 @@ while ($row = $result->fetch_assoc()) {
   $mysqli->query("DELETE FROM referendum WHERE signature=FROM_BASE64('$referendum==')") or error($mysqli->error);
 }
 $result->free();
-die(json_encode($output, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+if (empty($output))
+  die();
+else
+  die(json_encode($output, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 ?>
