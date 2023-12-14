@@ -90,7 +90,7 @@ if (!$referendum) { # fetch it from notary and store deadline in database
   $publication = json_decode($publication_json, true);
   $deadline = $publication['deadline'];
   $query = "INSERT INTO referendum(signature, deadline) VALUES(FROM_BASE64('$vote->referendum=='), FROM_UNIXTIME($deadline))";
-  $mysqli->query($query) or error($mysqli->error);
+  $mysqli->query($query) or error($mysqli->error . 'query = ' . $query);
 }
 
 $query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, answer) VALUES("
