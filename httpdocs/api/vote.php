@@ -54,6 +54,8 @@ if (!isset($vote->ballot))
   error("unable to read vote ballot field");
 if (!isset($vote->answer))
   error("unable to read vote answer field");
+if (!isset($vote->area))
+  error("unable to read vote area field");
 
 $PRODUCTION_APP_KEY = // public key of the genuine app
   'vD20QQ18u761ean1+zgqlDFo6H2Emw3mPmBxeU24x4o1M2tcGs+Q7G6xASRf4LmSdO1h67ZN0sy1tasNHH8Ik4CN63elBj4ELU70xZeYXIMxxxDqis'.
@@ -72,6 +74,7 @@ $voteBytes = base64_decode("$vote->referendum==");
 $voteBytes .= pack('J', $vote->number);
 $voteBytes .= base64_decode("$vote->ballot");
 $voteBytes .= $vote->answer;
+$voteBytes .= pack('J', $vote->area);
 
 $publicKey = openssl_pkey_get_public(public_key($vote->appKey));
 $details = openssl_pkey_get_details($publicKey);
@@ -93,13 +96,14 @@ if (!$referendum) { # fetch it from notary and store deadline in database
   $mysqli->query($query) or error($mysqli->error . 'query = ' . $query);
 }
 
-$query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, answer) VALUES("
+$query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, answer, area) VALUES("
         ."FROM_BASE64('$vote->appKey=='), "
         ."FROM_BASE64('$vote->appSignature=='), "
         ."FROM_BASE64('$vote->referendum=='), "
         ."$vote->number, "
         ."FROM_BASE64('$vote->ballot'), "
-        ."\"$vote->answer\") "
+        ."\"$vote->answer\"
+        ."$vote->area) "
         ."ON DUPLICATE KEY UPDATE appSignature=FROM_BASE64('$vote->appSignature=='), number=$vote->number, answer=\"$vote->answer\";";
 $mysqli->query($query) or error($mysqli->error);
 die("{\"status\":\"OK\"}");
