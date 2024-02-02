@@ -10,7 +10,8 @@ CREATE TABLE `vote` (
   `referendum` blob NOT NULL,
   `number` int(11) NOT NULL,
   `ballot` binary(32) NOT NULL,
-  `answer` text NOT NULL
+  `answer` text NOT NULL,
+  `area` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `referendum` (
