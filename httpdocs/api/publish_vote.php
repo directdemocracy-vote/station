@@ -39,7 +39,9 @@ while ($row = $result->fetch_assoc()) {
           ."REPLACE(REPLACE(TO_BASE64(appSignature), '\\n', ''), '=', '') AS appSignature, "
           ."number, "
           ."REPLACE(TO_BASE64(ballot), '\\n', '') AS ballot, "
-          ."answer FROM vote WHERE referendum=FROM_BASE64('$referendum==')";
+          ."answer, "
+          ."area "
+          ."FROM vote WHERE referendum=FROM_BASE64('$referendum==')";
   $r = $mysqli->query($query) or error($mysqli->error);
   while($v = $r->fetch_assoc()) {
     $vote = array(
@@ -52,7 +54,8 @@ while ($row = $result->fetch_assoc()) {
       'referendum' => $referendum,
       'number' => intval($v['number']),
       'ballot' => $v['ballot'],
-      'answer' => $v['answer']
+      'answer' => $v['answer'],
+      'area' => intval($v['area'])
     );
     $data = json_encode($vote, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     $signature = '';
