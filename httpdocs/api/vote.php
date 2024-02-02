@@ -72,9 +72,9 @@ if ($vote->appKey !== $PRODUCTION_APP_KEY && $vote->appKey !== $TEST_APP_KEY)
 # verify app signature
 $voteBytes = base64_decode("$vote->referendum==");
 $voteBytes .= pack('J', $vote->number);
+$voteBytes .= pack('J', $vote->area);
 $voteBytes .= base64_decode("$vote->ballot");
 $voteBytes .= $vote->answer;
-$voteBytes .= pack('J', $vote->area);
 
 $publicKey = openssl_pkey_get_public(public_key($vote->appKey));
 $details = openssl_pkey_get_details($publicKey);
@@ -96,14 +96,14 @@ if (!$referendum) { # fetch it from notary and store deadline in database
   $mysqli->query($query) or error($mysqli->error . 'query = ' . $query);
 }
 
-$query = "INSERT INTO vote(appKey, appSignature, referendum, number, ballot, answer, area) VALUES("
+$query = "INSERT INTO vote(appKey, appSignature, referendum, number, area, ballot, answer) VALUES("
         ."FROM_BASE64('$vote->appKey=='), "
         ."FROM_BASE64('$vote->appSignature=='), "
         ."FROM_BASE64('$vote->referendum=='), "
         ."$vote->number, "
+        ."$vote->area, "
         ."FROM_BASE64('$vote->ballot'), "
-        ."\"$vote->answer\", "
-        ."$vote->area) "
+        ."\"$vote->answer\" "
         ."ON DUPLICATE KEY UPDATE appSignature=FROM_BASE64('$vote->appSignature=='), number=$vote->number, answer=\"$vote->answer\";";
 $mysqli->query($query) or error($mysqli->error);
 die("{\"status\":\"OK\"}");
