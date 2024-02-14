@@ -1,5 +1,5 @@
 {
   "moto": "un bureau de vote pour anonymiser les votes",
-  "introduction": "<p>Ce service web héberge un exemple de bureau de vote pour <i>directdemocracy</i>.</p><p>Les bureaux de votes permettent d'anonymiser les bulletins de vote des citoyens.</p>",
-  "more-info": "Pour plus d'informations, veuillez consulter <a href=\"//directdemocracy.vote\" target=\"_blank\">directdemocracy.vote</a>.",
+  "introduction": "<p>Ce service web héberge un exemple de bureau de vote pour direct<b>democracy</b>.</p><p>Les bureaux de votes permettent d'anonymiser les bulletins de vote des citoyens.</p>",
+  "more-info": "Pour plus d'informations, veuillez consulter <a href=\"//directdemocracy.vote\" target=\"_blank\">directdemocracy.vote</a>."
 }
