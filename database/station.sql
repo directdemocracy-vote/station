@@ -9,7 +9,7 @@ CREATE TABLE `vote` (
   `appSignature` blob NOT NULL,
   `referendum` blob NOT NULL,
   `number` int(11) NOT NULL,
-  `area` int(11) NOT NULL,
+  `locality` bigint(20) NOT NULL,
   `ballot` binary(32) NOT NULL,
   `answer` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
