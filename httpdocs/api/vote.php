@@ -1,4 +1,5 @@
 <?php
+require_once '../../php/header.php';
 require '../../php/database.php';
 require '../../php/blind-sign.php';
 
@@ -18,9 +19,6 @@ function public_key($key) {
   return $publicKey;
 }
 
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: content-type");
 $vote = json_decode(file_get_contents("php://input"));
 
 function stripped_key($key, $type) {
