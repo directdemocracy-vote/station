@@ -1,4 +1,5 @@
 <?php
+require_once '../../php/header.php';
 require_once(__DIR__.'/../../php/database.php');
 
 function error($message) {
@@ -11,10 +12,6 @@ function stripped_key($public_key) {
   $stripped = str_replace(array("\r", "\n", '='), '', $stripped);
   return substr($stripped, 44, -6);
 }
-
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: content-type");
 
 $version = 2;
 $notary = 'https://notary.directdemocracy.vote';
